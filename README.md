@@ -83,4 +83,9 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## License
 
-Apache-2.0 © 2025 Rishab RK
+Apache-2.0 © 2025
+Rishab R Khatokar
+Aman Singh
+Rohith VS
+Hemant Kumar BK
+
