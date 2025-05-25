@@ -1,5 +1,6 @@
-// Final App.js with Create Deck button and Pokémon modal updates
 import React, { useState, useEffect, useRef } from 'react';
+import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
+import Deck from './deck';
 import './App.css';
 
 const ALL_TYPES = [
@@ -7,74 +8,8 @@ const ALL_TYPES = [
   "ground", "psychic", "fighting", "rock", "ghost", "dragon", "ice", "dark", "steel", "fairy"
 ];
 
-function App() {
-  const [pokemons, setPokemons] = useState([]);
-  const [nextId, setNextId] = useState(1);
-  const [filterType, setFilterType] = useState("all");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedPokemon, setSelectedPokemon] = useState(null);
-  const loader = useRef(null);
-  const BATCH_SIZE = 50;
-
-  const loadPokemonBatch = async () => {
-    const newData = [];
-
-    for (let id = nextId; id < nextId + BATCH_SIZE; id++) {
-      try {
-        const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
-        const data = await res.json();
-        const type = data.types[0]?.type.name || 'unknown';
-
-        newData.push({
-          id: data.id,
-          name: data.name,
-          sprite: data.sprites.front_default,
-          type,
-          stats: data.stats.map(s => ({
-            name: s.stat.name,
-            value: s.base_stat
-          }))
-        });
-      } catch (error) {
-        console.error(`Failed to load Pokémon ID ${id}:`, error);
-      }
-    }
-
-    setPokemons(prev => {
-      const existingIds = new Set(prev.map(p => p.id));
-      const uniqueNew = newData.filter(p => !existingIds.has(p.id));
-      return [...prev, ...uniqueNew];
-    });
-
-    setNextId(prev => prev + BATCH_SIZE);
-  };
-
-  useEffect(() => {
-    loadPokemonBatch();
-  }, []);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      entries => {
-        if (entries[0].isIntersecting) {
-          loadPokemonBatch();
-        }
-      },
-      { threshold: 1 }
-    );
-
-    if (loader.current) observer.observe(loader.current);
-    return () => {
-      if (loader.current) observer.unobserve(loader.current);
-    };
-  }, [nextId]);
-
-  const filteredPokemons = pokemons.filter(p =>
-    p.name &&
-    p.type &&
-    (filterType === "all" || p.type.toLowerCase() === filterType.toLowerCase()) &&
-    p.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+function Home({ pokemons, filteredPokemons, selectedPokemon, setSelectedPokemon, filterType, setFilterType, searchQuery, setSearchQuery, loader }) {
+  const navigate = useNavigate();
 
   const groupedByType = filteredPokemons.reduce((acc, pokemon) => {
     const type = pokemon.type;
@@ -95,7 +30,7 @@ function App() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
-          <button className="deck-btn" onClick={() => alert('Navigate to Create Deck Page')}>
+          <button className="deck-btn" onClick={() => navigate('/deck')}>
             Create Deck
           </button>
         </div>
@@ -166,6 +101,97 @@ function App() {
         </div>
       )}
     </div>
+  );
+}
+
+function App() {
+  const [pokemons, setPokemons] = useState([]);
+  const [nextId, setNextId] = useState(1);
+  const [filterType, setFilterType] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedPokemon, setSelectedPokemon] = useState(null);
+  const loader = useRef(null);
+  const BATCH_SIZE = 50;
+
+  const loadPokemonBatch = async () => {
+    const newData = [];
+
+    for (let id = nextId; id < nextId + BATCH_SIZE; id++) {
+      try {
+        const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
+        const data = await res.json();
+        const type = data.types[0]?.type.name || 'unknown';
+
+        newData.push({
+          id: data.id,
+          name: data.name,
+          sprite: data.sprites.front_default,
+          type,
+          stats: data.stats.map(s => ({
+            name: s.stat.name,
+            value: s.base_stat
+          }))
+        });
+      } catch (error) {
+        console.error(`Failed to load Pokémon ID ${id}:`, error);
+      }
+    }
+
+    setPokemons(prev => {
+      const existingIds = new Set(prev.map(p => p.id));
+      const uniqueNew = newData.filter(p => !existingIds.has(p.id));
+      return [...prev, ...uniqueNew];
+    });
+
+    setNextId(prev => prev + BATCH_SIZE);
+  };
+
+  useEffect(() => {
+    loadPokemonBatch();
+  }, []);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      entries => {
+        if (entries[0].isIntersecting) {
+          loadPokemonBatch();
+        }
+      },
+      { threshold: 1 }
+    );
+
+    if (loader.current) observer.observe(loader.current);
+    return () => {
+      if (loader.current) observer.unobserve(loader.current);
+    };
+  }, [nextId]);
+
+  const filteredPokemons = pokemons.filter(p =>
+    p.name &&
+    p.type &&
+    (filterType === "all" || p.type.toLowerCase() === filterType.toLowerCase()) &&
+    p.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={
+          <Home
+            pokemons={pokemons}
+            filteredPokemons={filteredPokemons}
+            selectedPokemon={selectedPokemon}
+            setSelectedPokemon={setSelectedPokemon}
+            filterType={filterType}
+            setFilterType={setFilterType}
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            loader={loader}
+          />
+        } />
+        <Route path="/deck" element={<Deck pokemons={pokemons} />} />
+      </Routes>
+    </Router>
   );
 }
 
