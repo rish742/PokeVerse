@@ -1,70 +1,86 @@
-# Getting Started with Create React App
+# PokeVerse
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A Pokémon Team Recommender web application built with Python and React. It lets you explore Pokémon, view stats, and get recommendations for complementary team members using a k-NN-based machine learning model.
 
-## Available Scripts
+## Features
 
-In the project directory, you can run:
+* **Browse & Search**: Filter Pokémon by name or type.
+* **Infinite Scroll**: Loads Pokémon in batches for smooth scrolling.
+* **Stats Modal**: View detailed stats (Attack, Defense, etc.) for any Pokémon.
+* **Recommendations**:
 
-### `npm start`
+  * **Backend mode**: FastAPI serving a scikit-learn k-NN model (joblib).
+  * **Client-only mode**: ONNX preprocessor + JavaScript k-NN for zero backend.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Project Structure
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+```
+/
+├── poke_trainer/             # Python ML scripts & optional API
+│   ├── train_sixth_model.py  # Train and save the k-NN pipeline
+│   ├── export_to_onnx.py     # Export preprocessor to ONNX
+│   ├── server.py             # FastAPI server for recommendations
+│   ├── requirements.txt      # Python dependencies
+│   └── poke_team_recommender.joblib  # Saved model (if checked in)
+├── public/                   # Public assets for React
+│   ├── index.html
+│   ├── poke_data.json        # JSON data for client-only mode
+│   └── ...
+├── src/                      # React source code
+│   ├── App.js                # Main React component
+│   ├── onnxClient.js         # ONNX runtime helper
+│   ├── utils/knn.js          # JS k-NN implementation
+│   └── hooks/usePokeData.js  # Data loader hook
+├── .gitignore
+├── LICENSE                   # Apache-2.0 License
+├── package.json
+└── README.md                 # This file
+```
 
-### `npm test`
+## Prerequisites
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+* **Node.js** v14+
+* **npm** or **yarn**
+* **Python** 3.8+
+* **pip** for Python packages
 
-### `npm run build`
+## Setup & Usage
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### 1. Backend (Optional)
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```bash
+cd poke_trainer
+python -m venv .venv
+source .venv/bin/activate    # Windows: .\.venv\Scripts\activate
+pip install -r requirements.txt
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+# Train the model and optionally save to joblib
+python train_sixth_model.py
 
-### `npm run eject`
+# Export the preprocessor to ONNX (for client-only mode)
+python export_to_onnx.py
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+# Start the FastAPI server
+uvicorn server:app --reload --port 8000
+```
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### 2. Frontend
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+```bash
+npm install
+npm start
+```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+* **Backend mode**: In `src/App.js`, ensure the recommendation fetch URL is `http://localhost:8000/recommend`.
+* **Client-only mode**: Ensure `public/poke_data.json` is generated and available; the app will use ONNX + JS k-NN automatically.
 
-## Learn More
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## Recommendation Modes
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+* **Backend**: Sends your team array to FastAPI, returns top-k similar Pokémon.
+* **Client-only**: Transforms features in-browser with ONNX, computes k-NN in JavaScript.
 
-### Code Splitting
+## License
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Apache-2.0 © 2025 Rishab RK
