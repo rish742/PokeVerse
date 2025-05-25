@@ -1,0 +1,119 @@
+/* Deck.css - Cleaner styling for deck builder */
+
+.deck-page {
+  background: linear-gradient(to bottom right, #1a1a2e, #16213e);
+  min-height: 100vh;
+  padding: 20px;
+  color: white;
+  text-align: center;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.deck-title {
+  font-size: 36px;
+  font-weight: bold;
+  color:red;
+  margin-bottom: 20px;
+}
+
+.deck-container {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.deck-card {
+  background: #212121;
+  padding: 10px;
+  border-radius: 10px;
+  width: 120px;
+  text-align: center;
+  box-shadow: 0 0 10px black;
+}
+
+.deck-card img {
+  width: 80px;
+  height: 80px;
+}
+
+.deck-card button {
+  margin-top: 8px;
+  background: #ff5252;
+  border: none;
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-weight: bold;
+  color: white;
+  cursor: pointer;
+}
+
+.deck-card button:hover {
+  background: #d32f2f;
+}
+
+.deck-message {
+  font-size: 16px;
+  margin: 10px 0;
+  color: yellow;
+}
+
+.play-btn {
+  padding: 12px 24px;
+  background-color: #00c853;
+  color: white;
+  font-size: 18px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  margin-bottom: 30px;
+}
+
+.play-btn:disabled {
+  background-color: #666;
+  cursor: not-allowed;
+}
+
+.available-title {
+  margin-top: 30px;
+  font-size: 28px;
+  text-shadow: 1px 1px 2px black;
+}
+
+.available-pokemon {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.available-card {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 10px;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0 0 10px #00000099;
+  color: white;
+}
+
+.available-card img {
+  width: 80px;
+  height: 80px;
+}
+
+.available-card button {
+  margin-top: 8px;
+  background: #448aff;
+  border: none;
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-weight: bold;
+  color: white;
+  cursor: pointer;
+}
+
+.available-card button:hover {
+  background: #2962ff;
+}
